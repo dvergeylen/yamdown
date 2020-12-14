@@ -3,6 +3,6 @@
     "appport" : "8080",
     "mode" : "browser",
     "window": {
-        "borderlesswindow": true
+  "borderlesswindow": true
     }
 }
