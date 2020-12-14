@@ -7,6 +7,12 @@
         NL_OS,
         NL_NAME
     };
+    const md = require('markdown-it')();
+
+    let source = `### This is a test!
+      My paragraph
+
+      \`main.cpp\``;
 </script>
 
 <style>
@@ -22,4 +28,10 @@
 <div id="neutralinoapp">
     <h1>NeutralinoJs</h1>
     <Information versionInfo={versionInfo}></Information>
+
+    <textarea bind:value={source}></textarea>
+
+    <div id="result">
+      {@html md.render(source)}
+    </div>
 </div>
