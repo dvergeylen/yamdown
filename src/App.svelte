@@ -1,37 +1,34 @@
 <script>
-    import Information from './components/Information.svelte';
-    export let Neutralino;
-    export let versionInfo = {
-        NL_VERSION,
-        NL_PORT,
-        NL_OS,
-        NL_NAME
-    };
     const md = require('markdown-it')();
 
     let source = `### This is a test!
-      My paragraph
-
-      \`main.cpp\``;
+My paragraph in \`main.cpp\`.`;
 </script>
 
 <style>
-    #neutralinoapp {
-    text-align: center;
-    }
-    #neutralinoapp h1{
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 20px;
-        color: #000000;
-    }
+  #container {
+    display: flex;
+    align-items: center;
+  }
+  .side {
+    width: 50%;
+    min-height: 100vh;
+    padding: 0.5em;
+    border: 1px solid red;
+  }
+  .side textarea {
+    width: 100%;
+    height: 100%;
+  }
 </style>
-<div id="neutralinoapp">
-    <h1>NeutralinoJs</h1>
-    <Information versionInfo={versionInfo}></Information>
-
+<div id="container">
+  <!-- Left Side : source code -->
+  <div class="side">
     <textarea bind:value={source}></textarea>
+  </div>
 
-    <div id="result">
-      {@html md.render(source)}
-    </div>
+  <!-- Right Side: Rendered code -->
+  <div class="side">
+    {@html md.render(source)}
+  </div>
 </div>
