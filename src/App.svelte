@@ -7,13 +7,15 @@ My paragraph in \`main.cpp\`.`;
 
 <style>
   #container {
+    height: 98%;
     display: flex;
     align-items: center;
   }
   .side {
     width: 50%;
-    min-height: 100vh;
-    padding: 0.5em;
+    height: 100%;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
     border: 1px solid red;
   }
   .side textarea {
