@@ -1,26 +1,9 @@
-# neutralinojs-svelte
+# Yamdown
 
-Svelte starter project for Neutralinojs
-
-## Get started
-
-Clone the repo 
+### Getting Started
 
 ```bash
-$ git clone https://github.com/neutralinojs/neutralinojs-svelte.git
-$ cd neutralinojs-svelte
+yarn install
+# @neutralino\neu as devDependency?
+npm run dev
 ```
-
-Install dependencies 
-
-```bash
-$ npm i
-```
-
-Bundle source files
-
-```bash
-$ npm run build
-```
-
-or simply use [neu-cli](https://neutralino.js.org/docs/#/tools/cli)
