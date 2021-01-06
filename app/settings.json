@@ -5,8 +5,8 @@
   "mode": "window",
   "window": {
     "title": "My app",
-    "width": "1000",
-    "height": "700",
+    "width": "1200",
+    "height": "800",
     "fullscreen": false,
     "alwaysontop": false,
     "iconfile": "neutralino.png",
