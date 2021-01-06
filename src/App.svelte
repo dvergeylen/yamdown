@@ -1,36 +1,31 @@
 <script>
-    const md = require('markdown-it')();
+  import {promisify } from './utils';
+  import Tab from './Tab.svelte';
 
-    let source = `### This is a test!
-My paragraph in \`main.cpp\`.`;
+  export let Neutralino;
+  export let NL_ARGS;
+
+  const md = require('markdown-it')();
+
+  const getEnvVar = promisify(Neutralino.os.getEnvar);
+  const promisePWD = getEnvVar('PWD');
 </script>
 
-<style>
-  #container {
-    height: 98%;
-    display: flex;
-    align-items: center;
-  }
-  .side {
-    width: 50%;
-    height: 100%;
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    border: 1px solid red;
-  }
-  .side textarea {
-    width: 100%;
-    height: 100%;
-  }
-</style>
-<div id="container">
-  <!-- Left Side : source code -->
-  <div class="side">
-    <textarea bind:value={source}></textarea>
-  </div>
 
-  <!-- Right Side: Rendered code -->
-  <div class="side">
-    {@html md.render(source)}
-  </div>
+<!-- Tabs List -->
+<div class="header">
+  <!-- TODO: Tabs headers should come here -->
+  {#await promisePWD}
+    <p>...waiting</p>
+  {:then pwd}
+    <p>Current cwd is {JSON.stringify(pwd)}</p>
+  {:catch error}
+    <p style="color: red">{error.message}</p>
+  {/await}
 </div>
+
+{#each NL_ARGS as filename, i}
+  {#if i > 0 }
+    <Tab filename={filename} Neutralino={Neutralino}/>
+  {/if}
+{/each}
