@@ -1,16 +1,16 @@
 {
-  "name": "neutralinojs-svelte",
+  "name": "yamdown",
   "version": "1.0.0",
-  "description": "",
+  "description": "Yet-Another-Markdown-Editor (Linux)",
   "main": "index.js",
-  "repository": "https://github.com/malipetek/neutralinojs-svelte.git",
+  "repository": "https://github.com/dvergeylen/yamdown.git",
   "scripts": {
     "build": "webpack -p --config webpack.config.js",
     "dev": "webpack --watch & webpack-dev-server --colors | neu run",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Daniel Vergeylen",
+  "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
