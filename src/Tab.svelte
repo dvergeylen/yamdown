@@ -1,11 +1,17 @@
 <script>
+  import markdownIt from 'markdown-it';
+  import katex from 'katex';
+
   export let Neutralino;
   export let filename;
   let source = '';
+  let renderedSource = '';
   let status = '';
   let statusClass = '';
 
-  const md = require('markdown-it')();
+  const md = markdownIt({
+    html: true,
+  });
 
   function saveDocument() {
     status = '';
@@ -29,6 +35,49 @@
       statusClass = 'alert';
     });
   }
+
+  /* This function applies rules to render a Markdown document:
+   * - with Latex translation ($...$ and $$...$$ statements)
+   * - with absolute image paths (TODO)
+   */
+  function render(src) {
+    let result;
+
+    /* Markdown conversion */
+    result = md.render(src);
+
+    /* <code></code> markup detections
+     * will return an array of str indexes containing <code> markup bounds
+     * No further rules should be applied (e.g: latex conversion) within these ranges
+     */
+    const codesIndexes = Array.from(result.matchAll(/\<code.*?\>.*?\<\/code\>/gs)).map((elem) => {
+      return [elem.index, elem.index + elem[0].length - 1]
+    });
+
+    /* Latex replacement: find $...$ or $$...$$ statements
+     * - Exclude patterns with '$' in between otherwise consecutive patterns
+     *   will be seen as one ($first$ and $second$ → would take very first and very last '$' of the two)
+     * - Exclude '$ ' and or ' $' open close markups (followed / preceded by space like chars), 
+     *   otherwise can lead to false positives with '$' the currency
+     * - Exclude if followed by digit (means currency) '(?!\d)' is a negative lookahead
+     * - Exclude if pattern is between code ranges (see above)
+     */
+    result = result.replace(/\${1,2}([^\s\$][^\$\n]+?[^\s\$])\${1,2}(?!\d)/g, (match, p1, offset) => {
+      const isInCodeRange = codesIndexes.reduce((acc, range) => range[0] <= offset && range[1] >= offset ? true : acc, false);
+      if (isInCodeRange) {
+        return match;
+      } else {
+        return katex.renderToString(p1, {
+          throwOnError: false,
+          displayMode: match.startsWith('$$'), /* '$$' pattern means separated paragraph, not inline */
+        });
+      }
+    });
+
+    return result;
+  }
+
+  $: renderedSource = render(source);
 </script>
 
 <style>
@@ -102,6 +151,6 @@
 
   <!-- Right Side: Rendered code -->
   <div class="side rightpane">
-    {@html md.render(source)}
+    {@html renderedSource}
   </div>
 </div>
