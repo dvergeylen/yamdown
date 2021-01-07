@@ -1,6 +1,6 @@
 <script>
   import {promisify } from './utils';
-  import Tab from './Tab.svelte';
+  import Tab from './components/Tab.svelte';
 
   export let Neutralino;
   export let NL_ARGS;
