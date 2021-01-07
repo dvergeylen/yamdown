@@ -16,8 +16,8 @@ module.exports = {
   module: {
     rules: [
       {
-  test: /\.css$/i,
-  use: [
+        test: /\.css$/i,
+        use: [
           /**
            * MiniCssExtractPlugin doesn't support HMR.
            * For developing, use 'style-loader' instead.
@@ -27,20 +27,20 @@ module.exports = {
         ],
       },
       {
-  test: /\.m?js$/,
-  exclude: /node_modules/,
-  use: {
-    loader: 'babel-loader',
-    options: {
-      presets: [
-        ['@babel/preset-env', {
-    targets: {
-      ie: "11"
-    }
-        }]
-      ]
-    }
-  }
+        test: /\.m?js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              ['@babel/preset-env', {
+                targets: {
+                  ie: "11"
+                }
+              }]
+            ]
+          }
+        }
       },
       {
         test: /\.svelte$/,
@@ -51,6 +51,19 @@ module.exports = {
             hotReload: true
           }
         }
+      },
+      {
+        test: /\.(woff(2)?|ttf)(\?v=\d+\.\d+\.\d+)?$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              name: '[name].[ext]',
+              outputPath: 'fonts/',
+              publicPath: 'assets/fonts',
+            }
+          }
+        ]
       },
     ],
   },

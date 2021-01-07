@@ -1,3 +1,4 @@
+import '../node_modules/katex/dist/katex.min.css';
 import App from './App.svelte';
 
 Neutralino.init({
