@@ -1,11 +1,9 @@
 <script>
-  import {promisify } from './utils';
+  import { promisify } from './utils';
   import Tab from './components/Tab.svelte';
 
   export let Neutralino;
   export let NL_ARGS;
-
-  const md = require('markdown-it')();
 
   const getEnvVar = promisify(Neutralino.os.getEnvar);
   const promisePWD = getEnvVar('PWD');
@@ -26,6 +24,6 @@
 
 {#each NL_ARGS as filename, i}
   {#if i > 0 }
-    <Tab filename={filename} Neutralino={Neutralino}/>
+    <Tab {filename} {Neutralino}/>
   {/if}
 {/each}
