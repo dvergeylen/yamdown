@@ -1,4 +1,3 @@
-
 /* Converts a function of signature fn(...args, cbSuccess, cbError)
  * into a promise function.
  * Returns a *function*.
@@ -11,6 +10,7 @@ function promisify(fn) {
   }
 }
 
-module.exports = {
+
+export {
   promisify,
-}
+};
