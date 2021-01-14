@@ -33,6 +33,24 @@
     }, renderInterval);
   }
 
+  function updateVScroll(evt) {
+    const currentPane = evt.target.classList.contains('side') ? evt.target : evt.target.closest('.side');
+    const scrollTop = evt.currentTarget.scrollTop;
+    const scrollTopMax = evt.currentTarget.scrollTopMax;
+    const paneLabel = currentPane.classList.contains('leftpane') ? 'rightpane' : 'leftpane textarea';
+
+    /* Update Other Pane Vertical scroll */
+    const pane = currentPane.closest('.container').querySelector(`.side.${paneLabel}`);
+    const newScrollTop = (scrollTop / scrollTopMax) * pane.scrollTopMax;
+
+    /* Require delta to > 1.5 to avoid ping pong between the two panes
+     * due to rounding errors
+     */
+    if (Math.abs(pane.scrollTop - newScrollTop) > 1.5) {
+      pane.scrollTop = newScrollTop;
+    }
+  }
+
   onMount(() => {
     /* Read filename and populate tab */
     if (filename) {
@@ -77,7 +95,7 @@
   }
 
   /* Main two panes */
-  #container {
+  .container {
     height: 98%;
     display: flex;
     align-items: center;
@@ -113,14 +131,15 @@
 </div>
 
 <!-- Main two panes -->
-<div id="container">
+<div class="container">
   <!-- Left Side : source code -->
   <div class="side leftpane">
-    <textarea bind:value={source} on:keyup={updateRenderedMarkdown}></textarea>
+    <textarea bind:value={source} on:keyup={updateRenderedMarkdown}
+    on:scroll={updateVScroll}></textarea>
   </div>
 
   <!-- Right Side: Rendered code -->
-  <div class="side rightpane markdown-body">
+  <div class="side rightpane markdown-body" on:scroll={updateVScroll}>
     {@html renderedSource}
   </div>
 </div>
