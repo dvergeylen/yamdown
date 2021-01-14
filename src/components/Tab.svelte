@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount, onDestroy } from 'svelte';
   import { render } from '../render';
 
   export let Neutralino;
@@ -8,6 +8,8 @@
   let renderedSource = '';
   let status = '';
   let statusClass = '';
+  let renderTimeout = null;
+  const renderInterval = 50; // ms
 
   function saveDocument() {
     status = '';
@@ -22,18 +24,29 @@
     });
   }
 
-  $: renderedSource = render(source);
+  function updateRenderedMarkdown() {
+    clearTimeout(renderTimeout);
+
+    // Make a new timeout set to go off in 'renderInterval' ms
+    renderTimeout = setTimeout(() => {
+      renderedSource = render(source);
+    }, renderInterval);
+  }
 
   onMount(() => {
     /* Read filename and populate tab */
     if (filename) {
       Neutralino.filesystem.readFile(filename, (result) => {
         source = result.content;
+        renderedSource = render(source);
       }, () => {
         status = `ERROR: Could not load "${filename}"`;
         statusClass = 'alert';
       });
     }
+  });
+  onDestroy(() => {
+    clearTimeout(renderTimeout);
   });
 </script>
 
@@ -103,7 +116,7 @@
 <div id="container">
   <!-- Left Side : source code -->
   <div class="side leftpane">
-    <textarea bind:value={source}></textarea>
+    <textarea bind:value={source} on:keyup={updateRenderedMarkdown}></textarea>
   </div>
 
   <!-- Right Side: Rendered code -->
