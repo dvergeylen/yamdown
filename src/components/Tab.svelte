@@ -36,12 +36,13 @@
   function updateVScroll(evt) {
     const currentPane = evt.target.classList.contains('side') ? evt.target : evt.target.closest('.side');
     const scrollTop = evt.currentTarget.scrollTop;
-    const scrollTopMax = evt.currentTarget.scrollTopMax;
+    const scrollTopMax = evt.currentTarget.scrollHeight + evt.currentTarget.clientHeight;
     const paneLabel = currentPane.classList.contains('leftpane') ? 'rightpane' : 'leftpane textarea';
 
     /* Update Other Pane Vertical scroll */
     const pane = currentPane.closest('.container').querySelector(`.side.${paneLabel}`);
-    const newScrollTop = (scrollTop / scrollTopMax) * pane.scrollTopMax;
+    const paneScrollTopMax = pane.scrollHeight + pane.clientHeight;
+    const newScrollTop = (scrollTop / scrollTopMax) * paneScrollTopMax;
 
     /* Require delta to > 1.5 to avoid ping pong between the two panes
      * due to rounding errors
@@ -73,6 +74,7 @@
   .header {
     width: 100%;
     min-height: 2em;
+    height: 10%;
     display: flex;
     align-items: center;
   }
@@ -96,12 +98,13 @@
 
   /* Main two panes */
   .container {
-    height: 98%;
+    height: 85%;
     display: flex;
     align-items: center;
   }
   .side {
-    width: 50%;
+    width: 48%;
+    margin:auto;
     height: 100%;
     padding-left: 0.5em;
     padding-right: 0.5em;
