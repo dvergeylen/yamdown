@@ -95,8 +95,7 @@
   /* Header */
   .header {
     width: 100%;
-    min-height: 2em;
-    height: 10%;
+    height: 5%;
     display: flex;
     align-items: center;
   }
@@ -120,7 +119,7 @@
 
   /* Main two panes */
   .container {
-    height: 85%;
+    height: 88%;
     display: flex;
     align-items: center;
   }
