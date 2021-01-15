@@ -9,7 +9,13 @@
   let status = '';
   let statusClass = '';
   let renderTimeout = null;
-  const renderInterval = 50; // ms
+
+  // Dynamically compute optimal time between render intervals:
+  let latestRenderTimes = [];
+  let n;
+  let mean;
+  let stdDev;
+  let renderInterval = 0; // ms
 
   function saveDocument() {
     status = '';
@@ -29,7 +35,11 @@
 
     // Make a new timeout set to go off in 'renderInterval' ms
     renderTimeout = setTimeout(() => {
+      const start = Date.now();
       renderedSource = render(source);
+      const end = Date.now();
+
+      latestRenderTimes = [end - start, ...latestRenderTimes.slice(0, 9)];
     }, renderInterval);
   }
 
@@ -50,6 +60,15 @@
     if (Math.abs(pane.scrollTop - newScrollTop) > 1.5) {
       pane.scrollTop = newScrollTop;
     }
+  }
+
+  // Dynamically compute optimal time between render intervals:
+  function computeOptimizedRenderInterval(latestRenderTimes) {
+    const n = Math.max(latestRenderTimes.length, 1); // to avoid dividing by 0
+    const mean = latestRenderTimes.reduce((sum, e) => sum + e, 0) / n;
+    const stdDev = Math.sqrt((1 / n) * latestRenderTimes.reduce((sum, e) => sum + Math.pow((e - mean), 2), 0))
+
+    return Math.ceil(mean + 1.10 * stdDev); // Dynamically adapt Render intervals
   }
 
   onMount(() => {
