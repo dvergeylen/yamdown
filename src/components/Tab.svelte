@@ -86,6 +86,9 @@
   onDestroy(() => {
     clearTimeout(renderTimeout);
   });
+
+
+  $: renderInterval = computeOptimizedRenderInterval(latestRenderTimes);
 </script>
 
 <style>
