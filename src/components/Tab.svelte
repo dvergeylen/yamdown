@@ -46,12 +46,12 @@
   function updateVScroll(evt) {
     const currentPane = evt.target.classList.contains('side') ? evt.target : evt.target.closest('.side');
     const scrollTop = evt.currentTarget.scrollTop;
-    const scrollTopMax = evt.currentTarget.scrollHeight + evt.currentTarget.clientHeight;
+    const scrollTopMax = evt.currentTarget.scrollHeight - evt.currentTarget.clientHeight;
     const paneLabel = currentPane.classList.contains('leftpane') ? 'rightpane' : 'leftpane textarea';
 
     /* Update Other Pane Vertical scroll */
     const pane = currentPane.closest('.container').querySelector(`.side.${paneLabel}`);
-    const paneScrollTopMax = pane.scrollHeight + pane.clientHeight;
+    const paneScrollTopMax = pane.scrollHeight - pane.clientHeight;
     const newScrollTop = (scrollTop / scrollTopMax) * paneScrollTopMax;
 
     /* Require delta to > 1.5 to avoid ping pong between the two panes
@@ -132,7 +132,7 @@
   }
   .side.leftpane textarea {
     width: 100%;
-    height: 100%;
+    height: 99%;
   }
   .side.rightpane {
     overflow-y: scroll;
