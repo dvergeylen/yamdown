@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/dvergeylen/yamdown">
+    <file>gtk4/yamdown.ui</file>
+  </gresource>
+</gresources>

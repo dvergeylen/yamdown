@@ -1,0 +1,9 @@
+[wrap-file]
+directory = gtk-4.0
+
+source_url = https://download.gnome.org/sources/gtk/4.0/gtk-4.0.2.tar.xz
+source_filename = gtk-4.0.2.tar.xz
+source_hash = 626707ac6751426ed76fed49c5b2d052dfee45757ce3827088ba87ca7f1dbc84
+
+[provide]
+libgtk4 = gtk4_dep
