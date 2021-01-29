@@ -70,7 +70,7 @@ module.exports = {
   output: {
     filename: '[name].js',
     chunkFilename: '[name].[id].js',
-    path: path.resolve(__dirname, './app/assets'),
+    path: path.resolve(__dirname, './pane/assets'),
   },
   mode,
   plugins: [
