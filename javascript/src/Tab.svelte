@@ -1,30 +1,15 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
-  import { render } from '../render';
+  import { render } from './render';
 
-  export let Neutralino;
-  export let filename;
-  export let index;
-  let source = '';
+  const index = 1; // FIXME: no need of index anymore
+  export let source = '';
   let renderedSource = '';
   let status = '';
   let statusClass = '';
   let renderTimeout = null;
   let latestRenderTimes = [];
   let renderInterval = 0; // ms
-
-  function saveDocument() {
-    status = '';
-    statusClass = '';
-
-    Neutralino.filesystem.writeFile(filename, source, () => {
-      status = `File saved successfully`;
-      statusClass = 'notice';
-    }, (error) => {
-      status = `ERROR: Could not save "${filename}": ${JSON.stringify(error)}`;
-      statusClass = 'alert';
-    });
-  }
 
   function updateRenderedMarkdown() {
     clearTimeout(renderTimeout);
@@ -70,14 +55,8 @@
 
   onMount(() => {
     /* Read filename and populate tab */
-    if (filename) {
-      Neutralino.filesystem.readFile(filename, (result) => {
-        source = result.content;
-        renderedSource = render(source);
-      }, () => {
-        status = `ERROR: Could not load "${filename}"`;
-        statusClass = 'alert';
-      });
+    if (source) {
+      renderedSource = render(source);
     }
   });
   onDestroy(() => {
@@ -139,15 +118,8 @@
 
 <!-- Header -->
 <div class="header">
-  <div class="leftpane">
-    <button on:click={saveDocument}>
-      Save
-    </button>
-  </div>
-  <div class="rightpane">
-    <div id="status-bar" class="{statusClass}">
-      {status}
-    </div>
+  <div id="status-bar" class="{statusClass}">
+    {status}
   </div>
 </div>
 
