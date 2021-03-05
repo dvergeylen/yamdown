@@ -6,6 +6,6 @@ webkit2gtk_dep = dependency('webkit2gtk-5.0')
 gnome=import('gnome')
 resources = gnome.compile_resources('ui-resources','gtk4/yamdown.gresource.xml')
 
-sourcefiles=files('main.c', 'gtk4/yamdown.c', 'gtk4/yamdown_notebook.c', 'gtk4/tfetextview.c')
+sourcefiles=files('main.c', 'gtk4/yamdown.c', 'gtk4/yamdown_notebook.c', 'gtk4/yamdown_webkit_webview.c')
 
 executable('yamdown', sourcefiles, resources, dependencies: [gtk4_dep, webkit2gtk_dep])

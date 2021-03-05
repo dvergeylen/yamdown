@@ -1,8 +1,7 @@
 #include "yamdown.h"
 
 /* The returned string should be freed with g_free() when no longer needed. */
-static gchar*
-get_untitled () {
+static gchar* get_untitled () {
   static int c = -1;
   if (++c == 0)
     return g_strdup_printf("Untitled");
@@ -10,22 +9,23 @@ get_untitled () {
     return g_strdup_printf ("Untitled-%u", c);
 }
 
-static void
-file_changed (TfeTextView *tv, GtkNotebook *nb) {
+static void file_changed (YamdownWebKitWebView *wv, GtkNotebook *nb) {
   GFile *file;
   char *filename;
   GtkWidget *scr;
   GtkWidget *label;
 
-  file = tfe_text_view_get_file (tv);
-  scr = gtk_widget_get_parent (GTK_WIDGET (tv));
+  file = yamdown_webkit_webview_get_file(wv);
+  scr = gtk_widget_get_parent (GTK_WIDGET (wv));
   if (G_IS_FILE (file))
-    filename = g_file_get_basename (file);
+    filename = g_file_get_basename(file);
   else
-    filename = get_untitled ();
+    filename = get_untitled();
+
+  // TODO: find the existing label instead of creating a new one
   label = gtk_label_new (filename);
   gtk_notebook_set_tab_label (nb, scr, label);
-  g_object_unref (file);
+  g_object_unref(file);
   g_free (filename);
 }
 
@@ -46,20 +46,18 @@ static void close_clicked(GtkWidget* btn_close __attribute__((unused)),
 }
 
 /* Save the contents in the current page */
-void
-notebook_page_save(GtkNotebook *nb) {
+void notebook_page_save(GtkNotebook *nb) {
   gint i;
   GtkWidget *scr;
-  GtkWidget *tv;
+  GtkWidget *wv;
 
   i = gtk_notebook_get_current_page (nb);
   scr = gtk_notebook_get_nth_page (nb, i);
-  tv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
-  tfe_text_view_save (TFE_TEXT_VIEW (tv));
+  wv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
+  yamdown_webkit_webview_save (YAMDOWN_WEBKIT_WEBVIEW(wv));
 }
 
-static void
-notebook_page_build (GtkNotebook *nb, GtkWidget *tv, char *filename) {
+static void notebook_page_build (GtkNotebook *nb, GtkWidget *wv, char *filename) {
   GtkWidget *scr;
   GtkNotebookPage *nbp;
 
@@ -70,7 +68,7 @@ notebook_page_build (GtkNotebook *nb, GtkWidget *tv, char *filename) {
   gint i;
   scr = gtk_scrolled_window_new ();
 
-  gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW (scr), tv);
+  gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW (scr), wv);
   boxh = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   label = gtk_label_new(filename);
 
@@ -112,61 +110,57 @@ notebook_page_build (GtkNotebook *nb, GtkWidget *tv, char *filename) {
   nbp = gtk_notebook_get_page (nb, scr);
   g_object_set (nbp, "tab-expand", TRUE, NULL);
   gtk_notebook_set_current_page (nb, i);
-  g_signal_connect (GTK_TEXT_VIEW (tv), "change-file", G_CALLBACK (file_changed), nb);
+  g_signal_connect (YAMDOWN_WEBKIT_WEBVIEW (wv), "change-file", G_CALLBACK (file_changed), nb);
 }
 
-static void
-open_response (TfeTextView *tv, gint response, GtkNotebook *nb) {
+static void open_response (YamdownWebKitWebView* wv, gint response, GtkNotebook *nb) {
   GFile *file;
   char *filename;
 
-  if (response != TFE_OPEN_RESPONSE_SUCCESS) {
-    g_object_ref_sink (tv);
-    g_object_unref (tv);
-  } else if (! G_IS_FILE (file = tfe_text_view_get_file (tv))) {
-    g_object_ref_sink (tv);
-    g_object_unref (tv);
+  if (response != YAMDOWN_OPEN_RESPONSE_SUCCESS) {
+    g_object_ref_sink (wv);
+    g_object_unref (wv);
+  } else if (! G_IS_FILE (file = yamdown_webkit_webview_get_file(wv))) {
+    g_object_ref_sink (wv);
+    g_object_unref (wv);
   } else {
     filename = g_file_get_basename (file);
     g_object_unref (file);
-    notebook_page_build (nb, GTK_WIDGET (tv), filename);
+    notebook_page_build (nb, GTK_WIDGET(wv), filename);
   }
 }
 
-void
-notebook_page_open (GtkNotebook *nb) {
+void notebook_page_open (GtkNotebook *nb) {
   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
 
-  GtkWidget *tv;
+  GtkWidget *wv;
 
-  tv = tfe_text_view_new ();
-  g_signal_connect (TFE_TEXT_VIEW (tv), "open-response", G_CALLBACK (open_response), nb);
-  tfe_text_view_open (TFE_TEXT_VIEW (tv), gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW));
+  wv = yamdown_webkit_webview_new();
+  g_signal_connect (YAMDOWN_WEBKIT_WEBVIEW(wv), "open-response", G_CALLBACK (open_response), nb);
+  yamdown_webkit_webview_open (YAMDOWN_WEBKIT_WEBVIEW(wv), gtk_widget_get_ancestor (GTK_WIDGET (nb), GTK_TYPE_WINDOW));
 }
 
-void
-notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
+void notebook_page_new_with_file (GtkNotebook *nb, GFile *file) {
   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
   g_return_if_fail(G_IS_FILE (file));
 
-  GtkWidget *tv;
+  GtkWidget *wv;
   char *filename;
 
-  if ((tv = tfe_text_view_new_with_file (file)) == NULL)
+  if ((wv = yamdown_webkit_webview_new_with_file(file)) == NULL)
     return; /* read error */
   filename = g_file_get_basename (file);
-  notebook_page_build (nb, tv, filename);
+  notebook_page_build (nb, wv, filename);
 }
 
-void
-notebook_page_new (GtkNotebook *nb) {
+void notebook_page_new (GtkNotebook *nb) {
   g_return_if_fail(GTK_IS_NOTEBOOK (nb));
 
-  GtkWidget *tv;
+  GtkWidget *wv;
   char *filename;
 
-  tv = tfe_text_view_new ();
+  wv = yamdown_webkit_webview_new();
   filename = get_untitled ();
-  notebook_page_build (nb, tv, filename);
+  notebook_page_build(nb, wv, filename);
 }
 
