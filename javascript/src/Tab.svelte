@@ -95,7 +95,7 @@
 
   /* Main two panes */
   .container {
-    height: 88%;
+    height: 94%;
     display: flex;
     align-items: center;
   }

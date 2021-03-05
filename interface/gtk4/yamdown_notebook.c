@@ -48,17 +48,14 @@ static void close_clicked(GtkWidget* btn_close __attribute__((unused)),
 /* Save the contents in the current page */
 void notebook_page_save(GtkNotebook *nb) {
   gint i;
-  GtkWidget *scr;
   GtkWidget *wv;
 
   i = gtk_notebook_get_current_page (nb);
-  scr = gtk_notebook_get_nth_page (nb, i);
-  wv = gtk_scrolled_window_get_child (GTK_SCROLLED_WINDOW (scr));
+  wv = gtk_notebook_get_nth_page (nb, i);
   yamdown_webkit_webview_save (YAMDOWN_WEBKIT_WEBVIEW(wv));
 }
 
 static void notebook_page_build (GtkNotebook *nb, GtkWidget *wv, char *filename) {
-  GtkWidget *scr;
   GtkNotebookPage *nbp;
 
   GtkWidget *boxh;
@@ -66,9 +63,7 @@ static void notebook_page_build (GtkNotebook *nb, GtkWidget *wv, char *filename)
   GtkWidget *btn_close;
   GtkStyleContext *context;
   gint i;
-  scr = gtk_scrolled_window_new ();
 
-  gtk_scrolled_window_set_child(GTK_SCROLLED_WINDOW (scr), wv);
   boxh = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   label = gtk_label_new(filename);
 
@@ -106,8 +101,8 @@ static void notebook_page_build (GtkNotebook *nb, GtkWidget *wv, char *filename)
   gtk_box_append(GTK_BOX (boxh), btn_close);
 
   /* Append notebook page to notebook, with horizontal box as page "title" */
-  i = gtk_notebook_append_page (nb, scr, boxh);
-  nbp = gtk_notebook_get_page (nb, scr);
+  i = gtk_notebook_append_page (nb, wv, boxh);
+  nbp = gtk_notebook_get_page (nb, wv);
   g_object_set (nbp, "tab-expand", TRUE, NULL);
   gtk_notebook_set_current_page (nb, i);
   g_signal_connect (YAMDOWN_WEBKIT_WEBVIEW (wv), "change-file", G_CALLBACK (file_changed), nb);
