@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="/com/github/dvergeylen/yamdown">
+    <file>yamdown.ui</file>
+    <file>paneview.ui</file>
+    <file>notebook_label.ui</file>
+  </gresource>
+</gresources>

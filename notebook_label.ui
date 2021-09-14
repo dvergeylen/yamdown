@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="YamdownNotebookLabel" parent="GtkBox">
+    <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+    <property name="spacing">5</property>
+    <property name="hexpand">FALSE</property>
+    <child>
+      <object class="GtkLabel" id="label">
+        <property name="label">Untitled</property>
+        <property name="halign">GTK_ALIGN_FILL</property>
+        <property name="hexpand">TRUE</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkButton" id="btn_close">
+        <property name="icon-name">window-close-symbolic</property>
+        <property name="tooltip_text" translatable="yes">Close document</property>
+        <property name="valign">center</property>
+        <property name="halign">GTK_ALIGN_END</property>
+        <property name="hexpand">FALSE</property>
+      </object>
+    </child>
+  </template>
+</interface>

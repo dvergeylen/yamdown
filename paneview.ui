@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <template class="YamdownPaneView" parent="GtkBox">
+    <property name="orientation">GTK_ORIENTATION_HORIZONTAL</property>
+    <property name="homogeneous">TRUE</property>
+    <property name="baseline-position">GTK_BASELINE_POSITION_TOP</property>
+    <child>
+      <object class="GtkScrolledWindow">
+        <child>
+          <object class="GtkTextView" id="sourceview">
+            <property name="hexpand">TRUE</property>
+            <property name="vexpand">TRUE</property>
+            <property name="wrap-mode">GTK_WRAP_WORD_CHAR</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkScrolledWindow">
+        <child>
+          <object class="GtkTextView" id="webview">
+            <property name="hexpand">TRUE</property>
+            <property name="vexpand">TRUE</property>
+            <property name="wrap-mode">GTK_WRAP_WORD_CHAR</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
