@@ -1,6 +1,6 @@
 #include "paneview.h"
-#include "save_utils.h"
-#include "open_utils.h"
+#include "dialog_response_callbacks.h"
+#include "utils.h"
 
 G_DEFINE_TYPE (YamdownPaneView, yamdown_pane_view, GTK_TYPE_BOX)
 

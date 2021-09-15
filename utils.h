@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 #include "notebook_label.h"
+#include "paneview.h"
 
 void update_tab_label(YamdownPaneView* pv, GFile* file) {
   char* filename;
@@ -54,36 +55,6 @@ static gboolean save_file(GFile* file, GtkTextBuffer* tb, GtkWindow* win) {
   }
   g_free(contents);
   return stat;
-}
-
-/* This function is a callback for a save as dialog response.
- * It save the sourceview buffer into the chosen file and emits a 'CHANGE_FILE'
- * signal to allow update of tab's Label
- */
-static void saveas_dialog_response(GtkWidget* dialog,
-                                   gint response,
-                                   YamdownPaneView* pv) {
-  GtkTextView* sourceview = pv->sourceview;
-  GtkTextBuffer* tb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(sourceview));
-  GtkWidget* win = gtk_widget_get_ancestor(GTK_WIDGET(pv), GTK_TYPE_WINDOW);
-  GFile* file;
-
-  if (response == GTK_RESPONSE_ACCEPT) {
-    file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(dialog));
-    if (!G_IS_FILE(file))
-      g_warning(
-          "YamdownPaneView: gtk_file_chooser_get_file returns non GFile.\n");
-    else if (save_file(file, tb, GTK_WINDOW(win))) {
-      if (G_IS_FILE(pv->file))
-        g_object_unref(pv->file);
-      pv->file = file;
-
-      /* Update Tab's Label */
-      update_tab_label(pv, file);
-    } else
-      g_object_unref(file);
-  }
-  gtk_window_destroy(GTK_WINDOW(dialog));
 }
 
 #endif /* __YAMDOWN_SAVE_UTILS_H__ */
