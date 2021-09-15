@@ -17,6 +17,9 @@ static void yamdown_pane_view_dispose(GObject* gobject) {
 
 static void yamdown_pane_view_init (YamdownPaneView *paneview) {
   gtk_widget_init_template (GTK_WIDGET (paneview));
+
+  GtkTextBuffer* tb = gtk_text_view_get_buffer(paneview->sourceview);
+  g_signal_connect(tb, "changed", G_CALLBACK(key_commit_cb), paneview);
 }
 
 
