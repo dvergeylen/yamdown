@@ -99,7 +99,7 @@ void notebook_page_open (GtkNotebook *nb) {
   notebook_page_build(nb, pv, filename);
 
   /* Update content with dialog provided file */
-  yamdown_pane_view_open(pv);
+  yamdown_pane_view_open(YAMDOWN_PANE_VIEW(pv));
 }
 
 
