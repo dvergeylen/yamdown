@@ -1,5 +1,6 @@
 #include "paneview.h"
 #include "dialog_response_callbacks.h"
+#include "renderer.h"
 #include "utils.h"
 
 G_DEFINE_TYPE (YamdownPaneView, yamdown_pane_view, GTK_TYPE_BOX)
@@ -14,14 +15,18 @@ static void yamdown_pane_view_dispose(GObject* gobject) {
   G_OBJECT_CLASS(yamdown_pane_view_parent_class)->dispose(gobject);
 }
 
+/* Callback when a new character has been added/removed from sourceview */
+void key_commit_cb(GtkTextBuffer* tb, gpointer user_data) {
+  render_html(tb, user_data);
+}
 
-static void yamdown_pane_view_init (YamdownPaneView *paneview) {
+
+    static void yamdown_pane_view_init(YamdownPaneView* paneview) {
   gtk_widget_init_template (GTK_WIDGET (paneview));
 
   GtkTextBuffer* tb = gtk_text_view_get_buffer(paneview->sourceview);
   g_signal_connect(tb, "changed", G_CALLBACK(key_commit_cb), paneview);
 }
-
 
 static void yamdown_pane_view_class_init (YamdownPaneViewClass *class) {
   GObjectClass *object_class = G_OBJECT_CLASS (class);

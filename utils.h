@@ -2,7 +2,6 @@
 #define __YAMDOWN_SAVE_UTILS_H__
 
 #include <gtk/gtk.h>
-#include <cmark.h>
 #include <string.h>
 #include "notebook_label.h"
 #include "paneview.h"
@@ -58,29 +57,5 @@ static gboolean save_file(GFile* file, GtkTextBuffer* tb, GtkWindow* win) {
   }
   g_free(contents);
   return stat;
-}
-
-void key_commit_cb(GtkTextBuffer* tb, gpointer user_data) {
-  YamdownPaneView* pv = YAMDOWN_PANE_VIEW(user_data);
-  GtkTextIter start_iter;
-  GtkTextIter end_iter;
-  gchar* contents;
-  GtkTextBuffer* webviewtb;
-
-  /* Retrieving content */
-  gtk_text_buffer_get_bounds(tb, &start_iter, &end_iter);
-  contents = gtk_text_buffer_get_text(tb, &start_iter, &end_iter, FALSE);
-  gtk_text_buffer_set_modified(tb, FALSE);
-
-  /* Converting content */
-  char* html = cmark_markdown_to_html(contents, strlen(contents), CMARK_OPT_UNSAFE);
-
-  /* Applying Content to Webview */
-  webviewtb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(pv->webview));
-  gtk_text_buffer_set_text(webviewtb, html, strlen(html));
-  gtk_text_buffer_set_modified(webviewtb, FALSE);
-
-  g_free(contents);
-  g_free(html);
 }
 #endif /* __YAMDOWN_SAVE_UTILS_H__ */

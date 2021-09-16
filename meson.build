@@ -8,6 +8,6 @@ cmark_dep = dependency('libcmark', version: '>= 0.30.1')
 gnome=import('gnome')
 resources = gnome.compile_resources('ui-resources','yamdown.gresource.xml')
 
-sourcefiles=files('main.c', 'yamdown.c', 'notebook.c', 'paneview.c', 'notebook_label.c')
+sourcefiles=files('main.c', 'yamdown.c', 'notebook.c', 'paneview.c', 'notebook_label.c', 'renderer.c')
 
 executable('yamdown', sourcefiles, resources, dependencies: [gtk4_dep, cmark_dep]) # gtksourceview_dep, webkit2gtk_dep])
