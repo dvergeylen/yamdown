@@ -1,0 +1,11 @@
+[wrap-file]
+# MUST be the same as source filename, doesn't work otherwise (bug!)
+directory = libsoup-3.0.1
+
+source_url = https://download.gnome.org/sources/libsoup/3.0/libsoup-3.0.1.tar.xz
+source_filename = libsoup-3.0.1.tar.xz
+source_hash = 6f0c316d10f8458b96f564c7644be3c2011bd75ad5054c8db26afb0c9a91bc47
+
+[provide]
+#libsoup = libsoup_dep
+dependency_names = soup-3.0

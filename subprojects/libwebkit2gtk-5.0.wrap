@@ -1,0 +1,10 @@
+[wrap-file]
+# MUST be the same as source filename, doesn't work otherwise (bug!)
+directory = webkitgtk-2.34.0
+
+source_url = https://webkitgtk.org/releases/webkitgtk-2.34.0.tar.xz
+source_filename = webkitgtk-2.34.0.tar.xz
+source_hash = 880c8ee626f67019f67557ca09e59a23ecf245e60f6173215f1a8823cb09af34
+
+[provide]
+dependency_names = webkit2gtk-5.0

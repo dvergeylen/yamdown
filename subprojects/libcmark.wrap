@@ -1,0 +1,5 @@
+[wrap-git]
+url = https://github.com/commonmark/cmark.git
+revision = master
+depth = 1
+directory = libcmark
