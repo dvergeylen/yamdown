@@ -12,6 +12,9 @@ static void yamdown_pane_view_dispose(GObject* gobject) {
   if (G_IS_FILE(pv->file))
     g_clear_object(&pv->file);
 
+  g_clear_object(&pv->lang_manager);
+  g_clear_object(&pv->style_scheme_manager);
+
   G_OBJECT_CLASS(yamdown_pane_view_parent_class)->dispose(gobject);
 }
 
@@ -21,11 +24,24 @@ void key_commit_cb(GtkTextBuffer* tb, gpointer user_data) {
 }
 
 
-    static void yamdown_pane_view_init(YamdownPaneView* paneview) {
+static void yamdown_pane_view_init(YamdownPaneView* paneview) {
   gtk_widget_init_template (GTK_WIDGET (paneview));
+  GtkSourceBuffer* tb = GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(paneview->sourceview)));
 
-  GtkTextBuffer* tb = gtk_text_view_get_buffer(paneview->sourceview);
-  g_signal_connect(tb, "changed", G_CALLBACK(key_commit_cb), paneview);
+  /* Assign Markdown syntax highlighting to sourcebuffer */
+  paneview->lang_manager = gtk_source_language_manager_get_default();
+  paneview->lang = gtk_source_language_manager_get_language(paneview->lang_manager, "markdown");
+  gtk_source_buffer_set_language (tb, paneview->lang);
+
+  /* Assign theme to sourcebuffer */
+  paneview->style_scheme_manager = gtk_source_style_scheme_manager_get_default();
+  paneview->style_theme = gtk_source_style_scheme_manager_get_scheme(paneview->style_scheme_manager, "cobalt");
+  gtk_source_buffer_set_style_scheme (tb, paneview->style_theme);
+
+  /* Create GtkTextView webviewtv (used to display raw HTML) */
+  paneview->webviewtv = GTK_TEXT_VIEW(gtk_text_view_new());
+
+  g_signal_connect(GTK_TEXT_BUFFER(tb), "changed", G_CALLBACK(key_commit_cb), paneview);
 }
 
 static void yamdown_pane_view_class_init (YamdownPaneViewClass *class) {
@@ -60,18 +76,18 @@ void yamdown_pane_view_saveas(YamdownPaneView* pv) {
 void yamdown_pane_view_save(YamdownPaneView* pv) {
   g_return_if_fail(YAMDOWN_IS_PANE_VIEW(pv));
 
-  GtkTextView* sourceview = pv->sourceview;
-  GtkTextBuffer* tb = gtk_text_view_get_buffer(sourceview);
+  GtkSourceView* sourceview = pv->sourceview;
+  GtkSourceBuffer* tb = GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sourceview)));
   GtkWidget* win = gtk_widget_get_ancestor(GTK_WIDGET(pv), GTK_TYPE_WINDOW);
 
-  if (!gtk_text_buffer_get_modified(tb))
+  if (!gtk_text_buffer_get_modified(GTK_TEXT_BUFFER(tb)))
     return; /* no need to save it */
   else if (pv->file == NULL)
     yamdown_pane_view_saveas(pv);
   else if (!G_IS_FILE(pv->file))
     g_error("YamdownPaneView: The pointer pv->file isn't NULL nor GFile.\n");
   else
-    save_file(pv->file, tb, GTK_WINDOW(win));
+    save_file(pv->file, GTK_TEXT_BUFFER(tb), GTK_WINDOW(win));
 }
 
 
@@ -84,8 +100,8 @@ GtkWidget* yamdown_pane_view_new_with_file(GFile* file) {
   g_return_val_if_fail(G_IS_FILE(file), NULL);
 
   GtkWidget* pv;
-  GtkTextView* sourceview;
-  GtkTextBuffer* tb;
+  GtkSourceView* sourceview;
+  GtkSourceBuffer* tb;
   char* contents;
   gsize length;
 
@@ -94,20 +110,16 @@ GtkWidget* yamdown_pane_view_new_with_file(GFile* file) {
 
   if ((pv = yamdown_pane_view_new()) != NULL) {
     sourceview = YAMDOWN_PANE_VIEW(pv)->sourceview;
-    tb = gtk_text_view_get_buffer(sourceview);
+    tb = GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sourceview)));
     YAMDOWN_PANE_VIEW(pv)->file = g_file_dup(file);
 
     /* Set text to textview's buffer */
-    gtk_text_buffer_set_text(tb, contents, length);
-    gtk_text_buffer_set_modified(tb, FALSE);
+    gtk_text_buffer_set_text(GTK_TEXT_BUFFER(tb), contents, length);
+    gtk_text_buffer_set_modified(GTK_TEXT_BUFFER(tb), TRUE);
+    gtk_source_buffer_set_highlight_syntax (tb, true);
 
-    // DEBUG --------------------------
-    sourceview = YAMDOWN_PANE_VIEW(pv)->webview;
-    tb = gtk_text_view_get_buffer(sourceview);
-    /* Set text to textview's buffer */
-    gtk_text_buffer_set_text(tb, contents, length);
-    gtk_text_buffer_set_modified(tb, FALSE);
-    // END OF DEBUG -------------------
+    /* Set rendered HTML to textview's buffer */
+    render_html(GTK_TEXT_BUFFER(tb), YAMDOWN_PANE_VIEW(pv));
   }
   g_free(contents);
   return pv;

@@ -7,7 +7,7 @@
     <child>
       <object class="GtkScrolledWindow">
         <child>
-          <object class="GtkTextView" id="sourceview">
+          <object class="GtkSourceView" id="sourceview">
             <property name="hexpand">TRUE</property>
             <property name="vexpand">TRUE</property>
             <property name="wrap-mode">GTK_WRAP_WORD_CHAR</property>

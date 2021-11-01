@@ -2,6 +2,7 @@
 #define __YAMDOWN_DIALOG_RESPONSE_CALLBACKS_H__
 
 #include <gtk/gtk.h>
+#include <gtksourceview/gtksource.h>
 #include "paneview.h"
 #include "utils.h"
 
@@ -13,8 +14,8 @@ static void open_dialog_response(GtkWidget* dialog,
   gsize length;
   GtkWidget* message_dialog;
   GError* err = NULL;
-  GtkTextView* sourceview;
-  GtkTextBuffer* tb;
+  GtkSourceView* sourceview;
+  GtkSourceBuffer* tb;
 
   if ((response == GTK_RESPONSE_ACCEPT) &&
       G_IS_FILE(file = gtk_file_chooser_get_file(GTK_FILE_CHOOSER(dialog)))) {
@@ -32,11 +33,11 @@ static void open_dialog_response(GtkWidget* dialog,
     } else {
       /* Retrieve sourceview */
       sourceview = pv->sourceview;
-      tb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(sourceview));
+      tb = GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sourceview)));
 
       /* Set text to textview's buffer */
-      gtk_text_buffer_set_text(tb, contents, length);
-      gtk_text_buffer_set_modified(tb, FALSE);
+      gtk_text_buffer_set_text(GTK_TEXT_BUFFER (tb), contents, length);
+      gtk_text_buffer_set_modified(GTK_TEXT_BUFFER (tb), FALSE);
       g_free(contents);
 
       if (G_IS_FILE(pv->file))
@@ -58,8 +59,8 @@ static void open_dialog_response(GtkWidget* dialog,
 static void saveas_dialog_response(GtkWidget* dialog,
                                    gint response,
                                    YamdownPaneView* pv) {
-  GtkTextView* sourceview = pv->sourceview;
-  GtkTextBuffer* tb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(sourceview));
+  GtkSourceView* sourceview = pv->sourceview;
+  GtkSourceBuffer* tb = GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sourceview)));
   GtkWidget* win = gtk_widget_get_ancestor(GTK_WIDGET(pv), GTK_TYPE_WINDOW);
   GFile* file;
 
@@ -68,7 +69,7 @@ static void saveas_dialog_response(GtkWidget* dialog,
     if (!G_IS_FILE(file))
       g_warning(
           "YamdownPaneView: gtk_file_chooser_get_file returns non GFile.\n");
-    else if (save_file(file, tb, GTK_WINDOW(win))) {
+    else if (save_file(file, GTK_TEXT_BUFFER(tb), GTK_WINDOW(win))) {
       if (G_IS_FILE(pv->file))
         g_object_unref(pv->file);
       pv->file = file;
