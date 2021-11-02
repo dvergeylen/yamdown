@@ -1,0 +1,10 @@
+[wrap-file]
+# MUST be the same as source filename, doesn't work otherwise (bug!)
+directory = md4c-release-0.4.8
+
+source_url =https://github.com/mity/md4c/archive/refs/tags/release-0.4.8.tar.gz
+source_filename = md4c-release-0.4.8.tar.xz
+source_hash = 4a457df853425b6bb6e3457aa1d1a13bccec587a04c38c622b1013a0da41439f
+
+[provide]
+dependency_names = md4c

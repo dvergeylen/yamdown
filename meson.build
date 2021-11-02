@@ -15,12 +15,17 @@ gtksourceview_dep = dependency('gtksourceview-5.0', version: '>= 5.2.0', fallbac
 
 libsoup3_dep = dependency('libsoup3', version: '>= 3.0.1', fallback: ['libsoup3', 'libsoup_dep'])
 
-cmark_dep = dependency('libcmark', version: '>= 0.30.1', required: false)
-if not cmark_dep.found()
-  cmark_proj = cmake.subproject('libcmark')
-  cmark_dep = cmark_proj.dependency('cmark')
-endif
+# cmark_dep = dependency('libcmark', version: '>= 0.30.1', required: false)
+# if not cmark_dep.found()
+#   cmark_proj = cmake.subproject('libcmark')
+#   cmark_dep = cmark_proj.dependency('cmark')
+# endif
 
+md4c_dep = dependency('md4c-html', version: '>= 0.4.8', required: true)
+# if not md4c_dep.found()
+#   md4c_proj = cmake.subproject('md4c')
+#   md4c_dep = md4c_proj.dependency('md4c')
+# endif
 
 # opt_var = cmake.subproject_options()
 # opt_var.add_cmake_defines({
@@ -53,7 +58,8 @@ yamdown = executable('yamdown',
                      resources,
                      dependencies: [
                       gtk4_dep,
-                      cmark_dep,
+#                      cmark_dep,
+                      md4c_dep,
                       gtksourceview_dep,
                       webkit2gtk_dep
                      ],

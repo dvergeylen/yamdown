@@ -1,8 +1,8 @@
 #ifndef __YAMDOWN_SAVE_UTILS_H__
 #define __YAMDOWN_SAVE_UTILS_H__
 
-#include <cmark.h>
 #include <gtk/gtk.h>
+#include "md4c-html.h"
 #include "paneview.h"
 
 /**/
