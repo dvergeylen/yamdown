@@ -1,3 +1,4 @@
+#include <unistd.h>
 #include "notebook.h"
 
 /* The returned string should be freed with g_free() when no longer needed. */
@@ -113,6 +114,15 @@ void notebook_page_new(GtkNotebook* nb) {
   pv = yamdown_pane_view_new();
   filename = get_untitled();
   notebook_page_build(nb, pv, filename);
+
+  const gchar* base_uri  = "file://";
+  gchar* dirname = getcwd(NULL, 0);
+  YAMDOWN_PANE_VIEW(pv)->base_uri = g_malloc(sizeof(gchar) * (strlen(base_uri) + strlen(dirname) + 1));
+  strcpy(YAMDOWN_PANE_VIEW(pv)->base_uri, base_uri);
+  strcat(YAMDOWN_PANE_VIEW(pv)->base_uri, dirname);
+  g_free(dirname);
+
+  g_print(YAMDOWN_PANE_VIEW(pv)->base_uri);
 }
 
 
