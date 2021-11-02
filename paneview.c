@@ -14,15 +14,33 @@ static void yamdown_pane_view_dispose(GObject* gobject) {
 
   g_clear_object(&pv->lang_manager);
   g_clear_object(&pv->style_scheme_manager);
+  g_clear_object(&pv->webviewtv);
 
   G_OBJECT_CLASS(yamdown_pane_view_parent_class)->dispose(gobject);
 }
 
 /* Callback when a new character has been added/removed from sourceview */
 void key_commit_cb(GtkTextBuffer* tb, gpointer user_data) {
-  render_html(tb, user_data);
-}
+  GtkTextBuffer* webviewtb;
+  GtkTextIter start_iter;
+  GtkTextIter end_iter;
+  gchar* html;
+  YamdownPaneView* pv = YAMDOWN_PANE_VIEW(user_data);
 
+  /* Render html in webviewtb */
+  render_html(tb, user_data);
+
+  /* Retrieve HTML */
+  webviewtb = gtk_text_view_get_buffer(pv->webviewtv);
+  gtk_text_buffer_get_bounds(webviewtb, &start_iter, &end_iter);
+  html = gtk_text_buffer_get_text(webviewtb, &start_iter, &end_iter, FALSE);
+
+  /* Render HTML in webview */
+  // TODO: null should be document's basedir
+  webkit_web_view_load_html(pv->webview, html, NULL);
+
+  g_free(html);
+}
 
 static void yamdown_pane_view_init(YamdownPaneView* paneview) {
   gtk_widget_init_template (GTK_WIDGET (paneview));
@@ -102,8 +120,12 @@ GtkWidget* yamdown_pane_view_new_with_file(GFile* file) {
   GtkWidget* pv;
   GtkSourceView* sourceview;
   GtkSourceBuffer* tb;
+  GtkTextBuffer* webviewtb;
   char* contents;
   gsize length;
+  GtkTextIter start_iter;
+  GtkTextIter end_iter;
+  gchar* html;
 
   if (!g_file_load_contents(file, NULL, &contents, &length, NULL, NULL)) /* read error */
     return NULL;
@@ -119,9 +141,24 @@ GtkWidget* yamdown_pane_view_new_with_file(GFile* file) {
     gtk_source_buffer_set_highlight_syntax (tb, true);
 
     /* Set rendered HTML to textview's buffer */
+    /* As we must "prepare" the HTML string, before giving it
+     * to webkitwebview, we use the GtkTextView 'insert' method to
+     * efficiently construct the string (with pre/post-ambles).
+     * This is not an extra copy, as it is needed anyway
+     */
     render_html(GTK_TEXT_BUFFER(tb), YAMDOWN_PANE_VIEW(pv));
+
+    /* Retrieve HTML */
+    webviewtb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(YAMDOWN_PANE_VIEW(pv)->webviewtv));
+    gtk_text_buffer_get_bounds(webviewtb, &start_iter, &end_iter);
+    html = gtk_text_buffer_get_text(webviewtb, &start_iter, &end_iter, FALSE);
+
+    /* Render HTML in webview */
+    // TODO: null should be document's basedir
+    webkit_web_view_load_html(YAMDOWN_PANE_VIEW(pv)->webview, html, NULL);
   }
   g_free(contents);
+  g_free(html);
   return pv;
 }
 

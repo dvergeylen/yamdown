@@ -18,10 +18,9 @@
     <child>
       <object class="GtkScrolledWindow">
         <child>
-          <object class="GtkTextView" id="webview">
+          <object class="WebkitWebView" id="webview">
             <property name="hexpand">TRUE</property>
             <property name="vexpand">TRUE</property>
-            <property name="wrap-mode">GTK_WRAP_WORD_CHAR</property>
           </object>
         </child>
       </object>

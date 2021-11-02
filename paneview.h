@@ -3,6 +3,7 @@
 
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksource.h>
+#include <webkit2/webkit2.h>
 
 #define YAMDOWN_TYPE_PANE_VIEW yamdown_pane_view_get_type ()
 G_DECLARE_FINAL_TYPE (YamdownPaneView, yamdown_pane_view, YAMDOWN, PANE_VIEW, GtkBox)
@@ -12,6 +13,11 @@ struct _YamdownPaneView {
   GFile* file;
   GtkSourceView* sourceview;
   GtkTextView* webviewtv; // Text equivalent webview (used to display raw HTML)
+  WebKitWebView* webview;
+  GtkSourceLanguageManager* lang_manager;
+  GtkSourceLanguage* lang;
+  GtkSourceStyleSchemeManager *style_scheme_manager;
+  GtkSourceStyleScheme * style_theme;
 };
 
 void render_html(GtkTextBuffer* tb, gpointer user_data);

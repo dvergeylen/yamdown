@@ -29,7 +29,7 @@ void render_html(GtkTextBuffer* sourceviewtb, gpointer user_data) {
   /* Converting content */
   char* html = cmark_markdown_to_html(contents, strlen(contents), CMARK_OPT_UNSAFE);
 
-  /* Applying Content to Webview */
+  /* Applying Content to WebviewTextView */
   /* Preamble */
   preamble = html_preamble();
   gtk_text_buffer_set_text(webviewtb, preamble, strlen(preamble));
