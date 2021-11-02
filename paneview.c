@@ -1,3 +1,4 @@
+#include <string.h>
 #include "paneview.h"
 #include "dialog_response_callbacks.h"
 #include "renderer.h"
@@ -15,6 +16,8 @@ static void yamdown_pane_view_dispose(GObject* gobject) {
   g_clear_object(&pv->lang_manager);
   g_clear_object(&pv->style_scheme_manager);
   g_clear_object(&pv->webviewtv);
+  if (pv->base_uri!= NULL)
+    g_free((pv->base_uri));
 
   G_OBJECT_CLASS(yamdown_pane_view_parent_class)->dispose(gobject);
 }
@@ -36,8 +39,7 @@ void key_commit_cb(GtkTextBuffer* tb, gpointer user_data) {
   html = gtk_text_buffer_get_text(webviewtb, &start_iter, &end_iter, FALSE);
 
   /* Render HTML in webview */
-  // TODO: null should be document's basedir
-  webkit_web_view_load_html(pv->webview, html, NULL);
+  webkit_web_view_load_html(pv->webview, html, pv->base_uri);
 
   g_free(html);
 }
@@ -55,6 +57,20 @@ static void yamdown_pane_view_init(YamdownPaneView* paneview) {
   paneview->style_scheme_manager = gtk_source_style_scheme_manager_get_default();
   paneview->style_theme = gtk_source_style_scheme_manager_get_scheme(paneview->style_scheme_manager, "cobalt");
   gtk_source_buffer_set_style_scheme (tb, paneview->style_theme);
+
+  /* Configure WebKitWebView with default settings */
+  WebKitSettings *settings = webkit_web_view_get_settings(paneview->webview);
+
+  webkit_settings_set_enable_javascript(settings, false);
+  webkit_settings_set_javascript_can_access_clipboard(settings, false);
+  webkit_settings_set_auto_load_images(settings, true);
+
+  /* DEBUG */
+  // webkit_settings_set_enable_write_console_messages_to_stdout(settings, true);
+  // webkit_settings_set_enable_developer_extras(settings, true);
+  /* END OF DEBUG */
+
+  webkit_web_view_set_settings(paneview->webview, settings);
 
   /* Create GtkTextView webviewtv (used to display raw HTML) */
   paneview->webviewtv = GTK_TEXT_VIEW(gtk_text_view_new());
@@ -117,11 +133,13 @@ GtkWidget* yamdown_pane_view_new() {
 GtkWidget* yamdown_pane_view_new_with_file(GFile* file) {
   g_return_val_if_fail(G_IS_FILE(file), NULL);
 
-  GtkWidget* pv;
+  GtkWidget* widget_pv;
   GtkSourceView* sourceview;
   GtkSourceBuffer* tb;
   GtkTextBuffer* webviewtb;
   char* contents;
+  gchar* absolute_filepath;
+  gchar* dirname;
   gsize length;
   GtkTextIter start_iter;
   GtkTextIter end_iter;
@@ -130,10 +148,23 @@ GtkWidget* yamdown_pane_view_new_with_file(GFile* file) {
   if (!g_file_load_contents(file, NULL, &contents, &length, NULL, NULL)) /* read error */
     return NULL;
 
-  if ((pv = yamdown_pane_view_new()) != NULL) {
-    sourceview = YAMDOWN_PANE_VIEW(pv)->sourceview;
+  if ((widget_pv = yamdown_pane_view_new()) != NULL) {
+    YamdownPaneView* pv = YAMDOWN_PANE_VIEW(widget_pv);
+    sourceview = pv->sourceview;
     tb = GTK_SOURCE_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sourceview)));
-    YAMDOWN_PANE_VIEW(pv)->file = g_file_dup(file);
+    pv->file = g_file_dup(file);
+
+    /* Retrieve file absolute path */
+    absolute_filepath = g_file_get_path(file);
+    dirname = g_path_get_dirname(absolute_filepath);
+
+    const gchar* base_uri  = "file://";
+    pv->base_uri = g_malloc(sizeof(gchar) * (strlen(base_uri) + strlen(dirname) + 1));
+    strcpy(pv->base_uri, base_uri);
+    strcat(pv->base_uri, dirname);
+
+    g_free(absolute_filepath);
+    g_free(dirname);
 
     /* Set text to textview's buffer */
     gtk_text_buffer_set_text(GTK_TEXT_BUFFER(tb), contents, length);
@@ -146,20 +177,19 @@ GtkWidget* yamdown_pane_view_new_with_file(GFile* file) {
      * efficiently construct the string (with pre/post-ambles).
      * This is not an extra copy, as it is needed anyway
      */
-    render_html(GTK_TEXT_BUFFER(tb), YAMDOWN_PANE_VIEW(pv));
+    render_html(GTK_TEXT_BUFFER(tb), pv);
 
     /* Retrieve HTML */
-    webviewtb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(YAMDOWN_PANE_VIEW(pv)->webviewtv));
+    webviewtb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(pv->webviewtv));
     gtk_text_buffer_get_bounds(webviewtb, &start_iter, &end_iter);
     html = gtk_text_buffer_get_text(webviewtb, &start_iter, &end_iter, FALSE);
 
     /* Render HTML in webview */
-    // TODO: null should be document's basedir
-    webkit_web_view_load_html(YAMDOWN_PANE_VIEW(pv)->webview, html, NULL);
+    webkit_web_view_load_html(pv->webview, html, pv->base_uri);
   }
   g_free(contents);
   g_free(html);
-  return pv;
+  return widget_pv;
 }
 
 

@@ -18,6 +18,7 @@ struct _YamdownPaneView {
   GtkSourceLanguage* lang;
   GtkSourceStyleSchemeManager *style_scheme_manager;
   GtkSourceStyleScheme * style_theme;
+  gchar* base_uri;
 };
 
 void render_html(GtkTextBuffer* tb, gpointer user_data);
