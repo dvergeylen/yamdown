@@ -4,7 +4,7 @@
  * with css styling from preferences
  */
 char* html_preamble() {
-  return "<!DOCTYPE html><html><head></head><body>";
+  return "<!DOCTYPE html><html><head><meta charset=\"utf-8\"></head><body>";
 }
 
 char* html_postamble() {
@@ -13,7 +13,7 @@ char* html_postamble() {
 
 void render_html(GtkTextBuffer* sourceviewtb, gpointer user_data) {
   YamdownPaneView* pv = YAMDOWN_PANE_VIEW(user_data);
-  GtkTextBuffer* webviewtb = gtk_text_view_get_buffer(GTK_TEXT_VIEW(pv->webview));
+  GtkTextBuffer* webviewtb = gtk_text_view_get_buffer(pv->webviewtv);
   GtkTextIter start_iter;
   GtkTextIter end_iter;
   gchar* contents;
