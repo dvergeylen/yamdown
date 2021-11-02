@@ -34,6 +34,7 @@ endif
 # })
 # webkit2gtk_proj = cmake.subproject('libwebkit2gtk-5.0', options: opt_var)
 # message('CMake targets:\n - ' + '\n - '.join(webkit2gtk_proj.target_list()))
+webkit2gtk_dep = dependency('webkit2gtk-5.0')
 
 # Resources
 resources = gnome.compile_resources('ui-resources','yamdown.gresource.xml')
@@ -53,6 +54,8 @@ yamdown = executable('yamdown',
                      dependencies: [
                       gtk4_dep,
                       cmark_dep,
-                      gtksourceview_dep
-                      ] # webkit2gtk_dep
-                     )
+                      gtksourceview_dep,
+                      webkit2gtk_dep
+                     ],
+                     install: true
+                    )
