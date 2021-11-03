@@ -1,4 +1,6 @@
 #include "renderer.h"
+#include "md4c/md4c-html.h"
+#include "paneview.h"
 
 /* This function returns <html> + <head> </head> + <body> content,
  * with css styling from preferences

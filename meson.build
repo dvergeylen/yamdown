@@ -21,7 +21,7 @@ libsoup3_dep = dependency('libsoup3', version: '>= 3.0.1', fallback: ['libsoup3'
 #   cmark_dep = cmark_proj.dependency('cmark')
 # endif
 
-md4c_dep = dependency('md4c-html', version: '>= 0.4.8', required: true)
+md4c_dep = dependency('md4c', version: '>= 0.4.8', required: true)
 # if not md4c_dep.found()
 #   md4c_proj = cmake.subproject('md4c')
 #   md4c_dep = md4c_proj.dependency('md4c')
@@ -50,7 +50,9 @@ sourcefiles = [
   'notebook.c',
   'paneview.c',
   'notebook_label.c',
-  'renderer.c'
+  'renderer.c',
+  'md4c/md4c-html.c',
+  'md4c/entity.c'
 ]
 
 yamdown = executable('yamdown',
